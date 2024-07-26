@@ -5,26 +5,12 @@ import { Box } from "@mui/material";
 import ThunderstormIcon from "@mui/icons-material/Thunderstorm";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LiaTemperatureHighSolid } from "react-icons/lia";
 import { TbTemperatureCelsius } from "react-icons/tb";
 
 import "./InfoBox.css";
 
 export default function InfoBox({ info }) {
-	const INIT_URL =
-		"https://cdn.pixabay.com/photo/2024/04/04/14/56/sunrise-8675236_1280.jpg";
-
-	// let info = {
-	//   city: "Delhi",
-	//   feelsLike: 36.3,
-	//   humidity: 75,
-	//   temp: 30,
-	//   tempMax: 30,
-	//   tempMin: 30,
-	//   weather: "broken clouds",
-	// };
-
 	return (
 		<div className="infoBox">
 			<div className="cardContainer">
@@ -98,7 +84,7 @@ export default function InfoBox({ info }) {
 								style={{ textAlign: "left" }}>
 								<Box ml={7}>
 									{" "}
-									{/* <div>Temperature = {info.temp}&deg;C</div> */}
+									
 									<div>
 										Feels Like = {info.feelsLike}&deg;C
 									</div>

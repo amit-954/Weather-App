@@ -1,90 +1,89 @@
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import InputAdornment from "@mui/material/InputAdornment";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 import "./SearchBox.css";
 import { useState } from "react";
 
 export default function SearchBox({ updateInfo }) {
-    let [city, setCity] = useState("");
-    let [error, setError] = useState(false);
+	const [city, setCity] = useState("");
+	const [error, setError] = useState("");
 
-    const API_URL = "https://api.openweathermap.org/data/2.5/weather?";
-    const API_KEY = "4337395015d8ceb8b432658ad2a9bc1a";
+	const API_URL = "https://api.openweathermap.org/data/2.5/weather?";
+	const API_KEY = import.meta.env.VITE_WEATHER_API_KEY; 
 
-    let getWeatherInfo = async () => {
-        try {
-            let response = await fetch(
-                `${API_URL}q=${city}&appid=${API_KEY}&units=metric`
-            );
 
-            let jsonResponse = await response.json();
+	const getWeatherInfo = async () => {
+		try {
+			const response = await fetch(
+				`${API_URL}q=${city}&appid=${API_KEY}&units=metric`,
+			);
 
-            let result = {
-                city: city,
-                temp: jsonResponse.main.temp,
-                tempMin: jsonResponse.main.temp_min,
-                tempMax: jsonResponse.main.temp_max,
-                humidity: jsonResponse.main.humidity,
-                feelsLike: jsonResponse.main.feels_like,
-                weather: jsonResponse.weather[0].description,
-            };
-            console.log(result);
-            return result;
-        } catch (err) {
-            throw err;
-        }
-    };
+			if (!response.ok) {
+				throw new Error("City not found");
+			}
 
-    let handleChange = (event) => {
-        setCity(event.target.value);
-    };
+			const jsonResponse = await response.json();
 
-    let handleSubmit = async (event) => {
-        try {
-            event.preventDefault();
-            console.log(city);
-            setCity("");
-            let newInfo = await getWeatherInfo();
-            updateInfo(newInfo);
-        } catch (err) {
-            setError(true);
-        }
-    };
-    return (
-        <div className="searchBox">
-            <form onSubmit={handleSubmit}>
-                <TextField
-                    id="city"
-                    label="City Name"
-                    variant="outlined"
-                    required
-                    value={city}
-                    onChange={handleChange}
-                    size="small"
-                    style={{ width: "280px" }}
-                //   InputProps={{
-                //     startAdornment: (
-                //       <InputAdornment position="start">
-                //         <LocationOnIcon />
-                //       </InputAdornment>
-                //     ),
-                //   }}
-                />
-                <br />
-                <br />
-                <Button
-                    variant="contained"
-                    type="submit"
-                    startIcon={<MyLocationIcon />}
-                >
-                    Search
-                </Button>
-                {error && <p style={{ color: "red" }}>No such place exists!</p>}
-            </form>
-        </div>
-    );
+			const result = {
+				city: city,
+				temp: jsonResponse.main.temp,
+				tempMin: jsonResponse.main.temp_min,
+				tempMax: jsonResponse.main.temp_max,
+				humidity: jsonResponse.main.humidity,
+				feelsLike: jsonResponse.main.feels_like,
+				weather: jsonResponse.weather[0].description,
+			};
+			return result;
+		} catch (err) {
+			throw err;
+		}
+	};
+
+	const handleChange = (event) => {
+		setCity(event.target.value);
+		setError("");
+	};
+
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		if (city.trim() === "") {
+			setError("City cannot be empty");
+			return;
+		}
+		try {
+			const newInfo = await getWeatherInfo();
+			setCity(""); //
+			updateInfo(newInfo);
+		} catch (err) {
+			setError("No such place exists!");
+		}
+	};
+
+	return (
+		<div className="searchBox">
+			<form onSubmit={handleSubmit}>
+				<TextField
+					id="city"
+					label="City Name"
+					variant="outlined"
+					value={city}
+					onChange={handleChange}
+					size="small"
+					style={{ width: "280px" }}
+					error={!!error}
+					helperText={error}
+				/>
+				<br />
+				<br />
+				<Button
+					variant="contained"
+					type="submit"
+					startIcon={<MyLocationIcon />}
+				>
+					Search
+				</Button>
+			</form>
+		</div>
+	);
 }
